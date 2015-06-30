@@ -10,8 +10,9 @@ years = range(2007,2015)
 
 def collect_data(years):
     list_of_dfs = []
+    path = 'data/'
     for i in years:
-        file = str(i) + '-PIT-Counts-by-State.csv'
+        file = path+ str(i) + '-PIT-Counts-by-State.csv'
         df = pd.read_csv(file)
         list_of_dfs.append(df)
     return list_of_dfs
