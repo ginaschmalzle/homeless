@@ -1,0 +1,78 @@
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script>
+  var timestamp = {{ timestamp|tojson|safe }};
+  var formatted_time_v_ctr = [];
+  var ctr = {{ ctr|tojson|safe }};
+  var views = {{ views|tojson|safe }};
+  var clicks = {{ clicks|tojson|safe }};
+  for (i=0; i <= timestamp.length - 1; i++){
+      mytime = timestamp[i].split('/');
+      mm = mytime[0];
+      dd = mytime[1];
+      yy = mytime[2].substring(0,4);
+      hh = mytime[2].substring(5,7);
+      mm = mytime[2].substring(8,10);
+      ss = mytime[2].substring(11,13);
+      f_time = Date.UTC(yy, mm-1, dd, hh, mm, ss);
+      formatted_time_v_ctr.push([f_time, ctr[i]]);
+      console.log(f_time, ctr[i])
+    };
+  formatted_time_v_ctr.sort()
+  function plotme (formatted_time_v_ctr) {
+    $('#container').highcharts({
+      chart: {
+          type: 'spline'
+      },
+      title: {
+          text: 'Click Through Rates'
+      },
+      xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: {
+            second: '%Y-%m-%d<br/>%H:%M:%S',
+            minute: '%Y-%m-%d<br/>%H:%M',
+            hour: '%Y-%m-%d<br/>%H:%M',
+            day: '%Y<br/>%m-%d',
+            week: '%Y<br/>%m-%d',
+            month: '%Y-%m',
+            year: '%Y'
+          },
+          title: {
+              text: 'Date'
+          }
+      },
+      yAxis: {
+          title: {
+              text: 'CTR'
+          },
+          min: 0
+      },
+      tooltip: {
+          headerFormat: '<b>{series.name}</b><br>',
+          pointFormat: '{point.x:%Y-%b-%e %H:%M:%S}: {point.y:.2f}'
+      },
+
+      plotOptions: {
+          spline: {
+              marker: {
+                  enabled: true
+              }
+          }
+      },
+
+      series: [{
+          name: 'CTR',
+          // Define the data points. All series have a dummy year
+          // of 1970/71 in order to be compared on the same x axis. Note
+          // that in JavaScript, months start at 0 for January, 1 for February etc.
+          data: formatted_time_v_ctr
+      }]
+  });
+};
+  plotme(formatted_time_v_ctr)
+</script>
+</html>

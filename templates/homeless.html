@@ -1,0 +1,89 @@
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
+<h1> Number of homeless from 2007 to 2014 </h1>
+<div id="container" style="height: 600px; min-width: 310px"></div>
+
+<form method="post" action="{{ url_for('run_job') }}">
+
+  <div id='homeless_types'>
+  <h3> Homeless Category </h3>
+  <SELECT name="homeless_types_selected" MULTIPLE SIZE = 10>
+  <!-- <OPTION  value = "All" selected> All </OPTION> -->
+    {% for i in range (0, homeless_types|length) %}
+    {% if homeless_types[i] in homeless_types_selected %}
+      <OPTION name="homeless_types" value = {{ homeless_types[i]|tojson|safe }} selected> {{ homeless_types[i]|tojson|safe }} </OPTION>
+    {% else %}
+      <OPTION name="homeless_types" value = {{ homeless_types[i]|tojson|safe }} > {{ homeless_types[i]|tojson|safe }} </OPTION>
+    {% endif %}
+    {% endfor %}
+  </SELECT> </div>
+
+  <div id = 'states'>
+  <h3> States </h3>
+  <SELECT name="state_selected">
+  <!-- <OPTION name="rec_sources" value = "All" selected> All </OPTION> -->
+    {% for i in range (0, states|length) %}
+    {% if states[i] in state_selected %}
+    <OPTION name="state" value = {{ states[i]|tojson|safe }} selected > {{ states[i]|tojson|safe }} </OPTION>
+    {% else %}
+    <OPTION name="state" value = {{ states[i]|tojson|safe }} > {{ states[i]|tojson|safe }} </OPTION>
+    {% endif %}
+    {% endfor %}
+  </SELECT> </div>
+
+<div id='submit_button'>
+<br>
+<input type="submit" class=myButton />
+</div>
+</form>
+
+<script>
+    $(function () {
+        var all_ts = {{ all_ts|tojson|safe }};
+        console.log(all_ts)
+        var years = {{ years|tojson|safe }};
+        var homeless_types_selected = {{ homeless_types_selected|tojson|safe }};
+            seriesCounter = 0,
+            // create the chart when all data is loaded
+        $('#container').highcharts({
+            title: {
+                text: 'Number of Homeless from 2007-2014',
+                x: -20 //center
+            },
+            subtitle: {
+                text: 'Source: DATA.GOV AHAR: Part 1 Point In Time Estimates of Homelessness',
+                x: -20
+            },
+            xAxis: {
+                categories: years
+            },
+            yAxis: {
+                title: {
+                    text: 'Number of people'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: all_ts
+        });
+    });
+
+</script>
+
+
+</html>
